@@ -55,8 +55,8 @@ if options[:tube]
   begin
     stats = connection.stats_tube(options[:tube])
   rescue Beanstalk::NotFoundError
-    puts "Tube #{options[:tube]} not found." 
-    exit
+    puts "CRITICAL - Tube #{options[:tube]} not found."
+    exit 2
   end
 else
  stats = connection.stats
