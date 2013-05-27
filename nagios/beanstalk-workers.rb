@@ -62,7 +62,7 @@ else
  stats = connection.stats
 end
 
-workers = stats['current-workers']
+workers = stats['current-watching']
 workers =  workers ?  workers : 0 
 
 status, msg = if workers < options[:error]
