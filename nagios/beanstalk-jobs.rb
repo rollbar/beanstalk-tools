@@ -62,7 +62,8 @@ else
  stats = connection.stats
 end
 
-jobs = stats['current-jobs-ready'] + stats['current-jobs-delayed']
+jobs = stats['current-jobs-ready']
+#+ stats['current-jobs-delayed']
 
 status, msg = if jobs > options[:error]
   [2, "CRITICAL - Too many outstanding jobs:  #{jobs}.  Error limit: #{options[:error]}"]
