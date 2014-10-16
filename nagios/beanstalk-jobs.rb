@@ -5,7 +5,10 @@ require 'beanstalk-client'
 
 require 'optparse'
 
-options = {}
+options = {
+  state: "ready"
+}
+
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: beanstalk-jobs.rb [options]"
   opts.on("-h", "--host HOST", "beanstalk host") do | host|
@@ -26,6 +29,10 @@ optparse = OptionParser.new do |opts|
 
   opts.on("--tube", "--tube TUBE", "beanstalk tube") do | tube |
     options[:tube] = tube
+  end
+
+  opts.on("--state", "--state STATE", "the state to check for (buried, ready, delayed)") do |state|
+    options[:state] = state
   end
 
 end
@@ -60,8 +67,7 @@ else
  stats = connection.stats
 end
 
-jobs = stats['current-jobs-ready']
-#+ stats['current-jobs-delayed']
+jobs = stats["current-jobs-#{options[:state]}"]
 
 status, msg = if jobs > options[:error]
   [2, "CRITICAL - Too many outstanding jobs:  #{jobs}.  Error limit: #{options[:error]}"]
