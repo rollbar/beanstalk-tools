@@ -11,26 +11,26 @@ optparse = OptionParser.new do |opts|
   opts.on("-h", "--host HOST", "beanstalk host") do | host|
     options[:host] = host
   end
-  
+
   opts.on("--port", "--port PORT", "beanstalk port") do | port |
     options[:port] = port
   end
-  
+
   opts.on("--error", "--error [ERROR_LIMIT]", Integer, "max items in tube before error") do | error_limit|
     options[:error] = error_limit
   end
-  
+
   opts.on("--warn", "--warn [WARN_LIMIT]", Integer, "max items in tube before warn") do | warn_limit|
     options[:warn] = warn_limit
-  end  
-  
-  opts.on("--tube", "--tube TUBE", "beanstalk tube") do | tube |
-    options[:tube] = tube 
   end
-    
+
+  opts.on("--tube", "--tube TUBE", "beanstalk tube") do | tube |
+    options[:tube] = tube
+  end
+
 end
 
-begin 
+begin
   optparse.parse!
 
   mandatory = [:host, :port, :error, :warn]
@@ -43,11 +43,9 @@ begin
 
 rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   puts $!.to_s
-  puts optparse 
+  puts optparse
   exit
 end
-
-
 
 connection = Beanstalk::Connection.new("#{options[:host]}:#{options[:port]}")
 
