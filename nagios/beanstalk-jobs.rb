@@ -5,32 +5,39 @@ require 'beanstalk-client'
 
 require 'optparse'
 
-options = {}
+options = {
+  state: "ready"
+}
+
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: beanstalk-jobs.rb [options]"
   opts.on("-h", "--host HOST", "beanstalk host") do | host|
     options[:host] = host
   end
-  
+
   opts.on("--port", "--port PORT", "beanstalk port") do | port |
     options[:port] = port
   end
-  
+
   opts.on("--error", "--error [ERROR_LIMIT]", Integer, "max items in tube before error") do | error_limit|
     options[:error] = error_limit
   end
-  
+
   opts.on("--warn", "--warn [WARN_LIMIT]", Integer, "max items in tube before warn") do | warn_limit|
     options[:warn] = warn_limit
-  end  
-  
-  opts.on("--tube", "--tube TUBE", "beanstalk tube") do | tube |
-    options[:tube] = tube 
   end
-    
+
+  opts.on("--tube", "--tube TUBE", "beanstalk tube") do | tube |
+    options[:tube] = tube
+  end
+
+  opts.on("--state", "--state STATE", "the state to check for (buried, ready, delayed)") do |state|
+    options[:state] = state
+  end
+
 end
 
-begin 
+begin
   optparse.parse!
 
   mandatory = [:host, :port, :error, :warn]
@@ -43,11 +50,9 @@ begin
 
 rescue OptionParser::InvalidOption, OptionParser::MissingArgument
   puts $!.to_s
-  puts optparse 
+  puts optparse
   exit
 end
-
-
 
 connection = Beanstalk::Connection.new("#{options[:host]}:#{options[:port]}")
 
@@ -62,8 +67,7 @@ else
  stats = connection.stats
 end
 
-jobs = stats['current-jobs-ready']
-#+ stats['current-jobs-delayed']
+jobs = stats["current-jobs-#{options[:state]}"]
 
 status, msg = if jobs > options[:error]
   [2, "CRITICAL - Too many outstanding jobs:  #{jobs}.  Error limit: #{options[:error]}"]

@@ -74,6 +74,8 @@ warn and error respectively set the maximum number of jobs found
 before a warning or error is issued. Optionally the --tube argument can be used to restrict 
 statistics to a particular tube.
 
+You can filter for certain states (ready, delayed, buried) with the `--state` option.
+
 ### beanstalk-workers.rb
 
 Ensures that the number of workers within the queue is within range.
